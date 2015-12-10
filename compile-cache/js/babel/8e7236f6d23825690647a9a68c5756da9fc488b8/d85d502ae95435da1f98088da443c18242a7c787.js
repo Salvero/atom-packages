@@ -1,0 +1,86 @@
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+/** @babel */
+
+var _postcss = require('postcss');
+
+var _postcss2 = _interopRequireDefault(_postcss);
+
+var _autoprefixer = require('autoprefixer');
+
+var _autoprefixer2 = _interopRequireDefault(_autoprefixer);
+
+var _postcssSafeParser = require('postcss-safe-parser');
+
+var _postcssSafeParser2 = _interopRequireDefault(_postcssSafeParser);
+
+function init() {
+	var editor = atom.workspace.getActiveTextEditor();
+
+	if (!editor) {
+		return;
+	}
+
+	var selectedText = editor.getSelectedText();
+	var text = selectedText || editor.getText();
+
+	(0, _postcss2['default'])((0, _autoprefixer2['default'])(atom.config.get('autoprefixer'))).process(text, {
+		parser: _postcssSafeParser2['default']
+	}).then(function (result) {
+		result.warnings().forEach(function (x) {
+			console.warn(x.toString());
+			atom.notifications.addWarning('Autoprefixer', { detail: x.toString() });
+		});
+
+		var cursorPosition = editor.getCursorBufferPosition();
+
+		if (selectedText) {
+			editor.setTextInBufferRange(editor.getSelectedBufferRange(), result.css);
+		} else {
+			editor.setText(result.css);
+		}
+
+		editor.setCursorBufferPosition(cursorPosition);
+	})['catch'](function (err) {
+		if (err.name === 'CssSyntaxError') {
+			err.message += err.showSourceCode();
+		}
+
+		console.error(err);
+		atom.notifications.addError('Autoprefixer', { detail: err.message });
+	});
+}
+
+var config = {
+	browsers: {
+		title: 'Supported browsers',
+		description: 'Using the [following syntax](https://github.com/ai/browserslist#queries).',
+		type: 'array',
+		'default': _autoprefixer2['default'].defaults,
+		items: {
+			type: 'string'
+		}
+	},
+	cascade: {
+		title: 'Cascade prefixes',
+		type: 'boolean',
+		'default': true
+	},
+	remove: {
+		title: 'Remove unneeded prefixes',
+		type: 'boolean',
+		'default': true
+	}
+};
+
+exports.config = config;
+var activate = function activate() {
+	atom.commands.add('atom-workspace', 'autoprefixer', init);
+};
+exports.activate = activate;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9zYWxtYW5SVDE1Ly5hdG9tL3BhY2thZ2VzL2F1dG9wcmVmaXhlci9pbmRleC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozt1QkFDb0IsU0FBUzs7Ozs0QkFDSixjQUFjOzs7O2lDQUNULHFCQUFxQjs7OztBQUVuRCxTQUFTLElBQUksR0FBRztBQUNmLEtBQU0sTUFBTSxHQUFHLElBQUksQ0FBQyxTQUFTLENBQUMsbUJBQW1CLEVBQUUsQ0FBQzs7QUFFcEQsS0FBSSxDQUFDLE1BQU0sRUFBRTtBQUNaLFNBQU87RUFDUDs7QUFFRCxLQUFNLFlBQVksR0FBRyxNQUFNLENBQUMsZUFBZSxFQUFFLENBQUM7QUFDOUMsS0FBTSxJQUFJLEdBQUcsWUFBWSxJQUFJLE1BQU0sQ0FBQyxPQUFPLEVBQUUsQ0FBQzs7QUFFOUMsMkJBQVEsK0JBQWEsSUFBSSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsY0FBYyxDQUFDLENBQUMsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxJQUFJLEVBQUU7QUFDcEUsUUFBTSxnQ0FBbUI7RUFDekIsQ0FBQyxDQUFDLElBQUksQ0FBQyxVQUFBLE1BQU0sRUFBSTtBQUNqQixRQUFNLENBQUMsUUFBUSxFQUFFLENBQUMsT0FBTyxDQUFDLFVBQUEsQ0FBQyxFQUFJO0FBQzlCLFVBQU8sQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDLFFBQVEsRUFBRSxDQUFDLENBQUM7QUFDM0IsT0FBSSxDQUFDLGFBQWEsQ0FBQyxVQUFVLENBQUMsY0FBYyxFQUFFLEVBQUMsTUFBTSxFQUFFLENBQUMsQ0FBQyxRQUFRLEVBQUUsRUFBQyxDQUFDLENBQUM7R0FDdEUsQ0FBQyxDQUFDOztBQUVILE1BQU0sY0FBYyxHQUFHLE1BQU0sQ0FBQyx1QkFBdUIsRUFBRSxDQUFDOztBQUV4RCxNQUFJLFlBQVksRUFBRTtBQUNqQixTQUFNLENBQUMsb0JBQW9CLENBQUMsTUFBTSxDQUFDLHNCQUFzQixFQUFFLEVBQUUsTUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDO0dBQ3pFLE1BQU07QUFDTixTQUFNLENBQUMsT0FBTyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQztHQUMzQjs7QUFFRCxRQUFNLENBQUMsdUJBQXVCLENBQUMsY0FBYyxDQUFDLENBQUM7RUFDL0MsQ0FBQyxTQUFNLENBQUMsVUFBQSxHQUFHLEVBQUk7QUFDZixNQUFJLEdBQUcsQ0FBQyxJQUFJLEtBQUssZ0JBQWdCLEVBQUU7QUFDbEMsTUFBRyxDQUFDLE9BQU8sSUFBSSxHQUFHLENBQUMsY0FBYyxFQUFFLENBQUM7R0FDcEM7O0FBRUQsU0FBTyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQztBQUNuQixNQUFJLENBQUMsYUFBYSxDQUFDLFFBQVEsQ0FBQyxjQUFjLEVBQUUsRUFBQyxNQUFNLEVBQUUsR0FBRyxDQUFDLE9BQU8sRUFBQyxDQUFDLENBQUM7RUFDbkUsQ0FBQyxDQUFDO0NBQ0g7O0FBRU0sSUFBTSxNQUFNLEdBQUc7QUFDckIsU0FBUSxFQUFFO0FBQ1QsT0FBSyxFQUFFLG9CQUFvQjtBQUMzQixhQUFXLEVBQUUsMkVBQTJFO0FBQ3hGLE1BQUksRUFBRSxPQUFPO0FBQ2IsYUFBUywwQkFBYSxRQUFRO0FBQzlCLE9BQUssRUFBRTtBQUNOLE9BQUksRUFBRSxRQUFRO0dBQ2Q7RUFDRDtBQUNELFFBQU8sRUFBRTtBQUNSLE9BQUssRUFBRSxrQkFBa0I7QUFDekIsTUFBSSxFQUFFLFNBQVM7QUFDZixhQUFTLElBQUk7RUFDYjtBQUNELE9BQU0sRUFBRTtBQUNQLE9BQUssRUFBRSwwQkFBMEI7QUFDakMsTUFBSSxFQUFFLFNBQVM7QUFDZixhQUFTLElBQUk7RUFDYjtDQUNELENBQUM7OztBQUVLLElBQU0sUUFBUSxHQUFHLFNBQVgsUUFBUSxHQUFTO0FBQzdCLEtBQUksQ0FBQyxRQUFRLENBQUMsR0FBRyxDQUFDLGdCQUFnQixFQUFFLGNBQWMsRUFBRSxJQUFJLENBQUMsQ0FBQztDQUMxRCxDQUFDIiwiZmlsZSI6Ii9Vc2Vycy9zYWxtYW5SVDE1Ly5hdG9tL3BhY2thZ2VzL2F1dG9wcmVmaXhlci9pbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8qKiBAYmFiZWwgKi9cbmltcG9ydCBwb3N0Y3NzIGZyb20gJ3Bvc3Rjc3MnO1xuaW1wb3J0IGF1dG9wcmVmaXhlciBmcm9tICdhdXRvcHJlZml4ZXInO1xuaW1wb3J0IHBvc3Rjc3NTYWZlUGFyc2VyIGZyb20gJ3Bvc3Rjc3Mtc2FmZS1wYXJzZXInO1xuXG5mdW5jdGlvbiBpbml0KCkge1xuXHRjb25zdCBlZGl0b3IgPSBhdG9tLndvcmtzcGFjZS5nZXRBY3RpdmVUZXh0RWRpdG9yKCk7XG5cblx0aWYgKCFlZGl0b3IpIHtcblx0XHRyZXR1cm47XG5cdH1cblxuXHRjb25zdCBzZWxlY3RlZFRleHQgPSBlZGl0b3IuZ2V0U2VsZWN0ZWRUZXh0KCk7XG5cdGNvbnN0IHRleHQgPSBzZWxlY3RlZFRleHQgfHwgZWRpdG9yLmdldFRleHQoKTtcblxuXHRwb3N0Y3NzKGF1dG9wcmVmaXhlcihhdG9tLmNvbmZpZy5nZXQoJ2F1dG9wcmVmaXhlcicpKSkucHJvY2Vzcyh0ZXh0LCB7XG5cdFx0cGFyc2VyOiBwb3N0Y3NzU2FmZVBhcnNlclxuXHR9KS50aGVuKHJlc3VsdCA9PiB7XG5cdFx0cmVzdWx0Lndhcm5pbmdzKCkuZm9yRWFjaCh4ID0+IHtcblx0XHRcdGNvbnNvbGUud2Fybih4LnRvU3RyaW5nKCkpO1xuXHRcdFx0YXRvbS5ub3RpZmljYXRpb25zLmFkZFdhcm5pbmcoJ0F1dG9wcmVmaXhlcicsIHtkZXRhaWw6IHgudG9TdHJpbmcoKX0pO1xuXHRcdH0pO1xuXG5cdFx0Y29uc3QgY3Vyc29yUG9zaXRpb24gPSBlZGl0b3IuZ2V0Q3Vyc29yQnVmZmVyUG9zaXRpb24oKTtcblxuXHRcdGlmIChzZWxlY3RlZFRleHQpIHtcblx0XHRcdGVkaXRvci5zZXRUZXh0SW5CdWZmZXJSYW5nZShlZGl0b3IuZ2V0U2VsZWN0ZWRCdWZmZXJSYW5nZSgpLCByZXN1bHQuY3NzKTtcblx0XHR9IGVsc2Uge1xuXHRcdFx0ZWRpdG9yLnNldFRleHQocmVzdWx0LmNzcyk7XG5cdFx0fVxuXG5cdFx0ZWRpdG9yLnNldEN1cnNvckJ1ZmZlclBvc2l0aW9uKGN1cnNvclBvc2l0aW9uKTtcblx0fSkuY2F0Y2goZXJyID0+IHtcblx0XHRpZiAoZXJyLm5hbWUgPT09ICdDc3NTeW50YXhFcnJvcicpIHtcblx0XHRcdGVyci5tZXNzYWdlICs9IGVyci5zaG93U291cmNlQ29kZSgpO1xuXHRcdH1cblxuXHRcdGNvbnNvbGUuZXJyb3IoZXJyKTtcblx0XHRhdG9tLm5vdGlmaWNhdGlvbnMuYWRkRXJyb3IoJ0F1dG9wcmVmaXhlcicsIHtkZXRhaWw6IGVyci5tZXNzYWdlfSk7XG5cdH0pO1xufVxuXG5leHBvcnQgY29uc3QgY29uZmlnID0ge1xuXHRicm93c2Vyczoge1xuXHRcdHRpdGxlOiAnU3VwcG9ydGVkIGJyb3dzZXJzJyxcblx0XHRkZXNjcmlwdGlvbjogJ1VzaW5nIHRoZSBbZm9sbG93aW5nIHN5bnRheF0oaHR0cHM6Ly9naXRodWIuY29tL2FpL2Jyb3dzZXJzbGlzdCNxdWVyaWVzKS4nLFxuXHRcdHR5cGU6ICdhcnJheScsXG5cdFx0ZGVmYXVsdDogYXV0b3ByZWZpeGVyLmRlZmF1bHRzLFxuXHRcdGl0ZW1zOiB7XG5cdFx0XHR0eXBlOiAnc3RyaW5nJ1xuXHRcdH1cblx0fSxcblx0Y2FzY2FkZToge1xuXHRcdHRpdGxlOiAnQ2FzY2FkZSBwcmVmaXhlcycsXG5cdFx0dHlwZTogJ2Jvb2xlYW4nLFxuXHRcdGRlZmF1bHQ6IHRydWVcblx0fSxcblx0cmVtb3ZlOiB7XG5cdFx0dGl0bGU6ICdSZW1vdmUgdW5uZWVkZWQgcHJlZml4ZXMnLFxuXHRcdHR5cGU6ICdib29sZWFuJyxcblx0XHRkZWZhdWx0OiB0cnVlXG5cdH1cbn07XG5cbmV4cG9ydCBjb25zdCBhY3RpdmF0ZSA9ICgpID0+IHtcblx0YXRvbS5jb21tYW5kcy5hZGQoJ2F0b20td29ya3NwYWNlJywgJ2F1dG9wcmVmaXhlcicsIGluaXQpO1xufTtcbiJdfQ==
+//# sourceURL=/Users/salmanRT15/.atom/packages/autoprefixer/index.js
